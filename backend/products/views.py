@@ -2,23 +2,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, permissions, authentication
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .permissions import IsStaffEditiorPermission
 from django.http import Http404
 
 from api.authentication import TokenAuthentication
+from api.mixins import StaffEditorPermissionMixin
 
 from .models import Product
 from .serializers import ProductSerializer
 
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(StaffEditorPermissionMixin, generics.ListCreateAPIView,):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser,IsStaffEditiorPermission]
 
     def perform_create(self, serializer):
         # serializer.save(user=self.request.user)
         print(serializer.validated_data)
+        email  = serializer.validated_data.pop('email')
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
         if content is None:
@@ -30,31 +30,29 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
 product_list_create_view = ProductListCreateAPIView.as_view()
 
-class ProductDetailAPIView(generics.RetrieveAPIView):
+
+class ProductDetailAPIView(StaffEditorPermissionMixin, generics.RetrieveAPIView,):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser,IsStaffEditiorPermission]
 
-    # lookup_field = 'id 
+    # lookup_field = 'id
 
 
 product_detail_view = ProductDetailAPIView.as_view()
 
 
-class ProductListAPIView(generics.ListAPIView):
+class ProductListAPIView(StaffEditorPermissionMixin, generics.ListAPIView,):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser,IsStaffEditiorPermission]
 
-    
 
 product_list_view = ProductListAPIView.as_view()
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+
+class ProductUpdateAPIView(StaffEditorPermissionMixin, generics.UpdateAPIView,):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser,IsStaffEditiorPermission]
-    lookup_field = 'pk' 
+    lookup_field = 'pk'
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -62,20 +60,21 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             instance.content = instance.title
             # instance.save()
 
+
 product_update_view = ProductUpdateAPIView.as_view()
 
-class ProductDeleteAPIView(generics.DestroyAPIView):
+
+class ProductDeleteAPIView(StaffEditorPermissionMixin, generics.DestroyAPIView,):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser,IsStaffEditiorPermission]
-    lookup_field = 'pk' 
+    permission_classes = [permissions.IsAdminUser, ]
+    lookup_field = 'pk'
 
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
 
 
 product_delete_view = ProductDeleteAPIView.as_view()
-
 
 
 # class ProddctMixinView(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin,generics.GenericAPIView):
@@ -105,8 +104,6 @@ product_delete_view = ProductDeleteAPIView.as_view()
 
 #     def perform_destroy(self, instance):
 #         return self.destroy(request, *args, **kwargs)
-        
-
 
 
 # @api_view(['GET', 'POST'])
@@ -114,7 +111,7 @@ product_delete_view = ProductDeleteAPIView.as_view()
 #     method = request.method
 
 #     if method == 'GET':
-        
+
 #         # urls
 #         # get single product
 #         if pk is not None:
