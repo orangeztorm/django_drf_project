@@ -42,6 +42,9 @@ class Product(models.Model):
     public = models.BooleanField(default=True)
     
     objects  = ProductManager()
+    
+    def is_public(self):
+        return self.public 
 
     @property
     def sale_price(self):

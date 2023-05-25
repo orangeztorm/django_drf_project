@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third party api services
+    'algoliasearch_django',
+
+    # Third-Party Packages
     'rest_framework',
     'rest_framework.authtoken',
+    # Internal Apps
     'api',
     'products',
     'search',
@@ -128,9 +133,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 auth_classes = [
-        'rest_framework.authentication.SessionAuthentication',
-        'api.authentication.TokenAuthentication'
-    ]
+    'rest_framework.authentication.SessionAuthentication',
+    'api.authentication.TokenAuthentication'
+]
 if DEBUG:
     auth_classes = [
         'rest_framework.authentication.TokenAuthentication',
@@ -146,4 +151,10 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
+}
+
+ALGOLIA = {
+    'APPLICATION_ID': 'FTLLOQ7Z0D',
+    'API_KEY': 'ca5e57823c9cfcd2766039d78fd8d999',
+    'INDEX_PREFIX': 'cfe',
 }
