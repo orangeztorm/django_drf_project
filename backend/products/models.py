@@ -10,12 +10,12 @@ user = settings.AUTH_USER_MODEL  # 'auth.User'
 
 
 class ProductQuerySet(models.QuerySet):
-    def is_pubic(self):
+    def is_public(self):
         return self.filter(public=True)
 
-    def search(self, query):
+    def search(self, query,user=None):
         lookup = Q(title__icontains=query) | Q(content__icontains=query)
-        qs = self.is_pubic().filter(lookup)
+        qs = self.is_public().filter(lookup)
         if user is not None:
             qs2 = qs.filter(user=user).filter(lookup)
             qs = (qs | qs2).distinct()
